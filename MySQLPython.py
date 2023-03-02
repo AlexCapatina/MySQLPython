@@ -4,21 +4,83 @@ import mysql.connector
 mydb = mysql.connector.connect(
     host="localhost",
     user="Alex",
-    password="BestPassword89"
+    password="BestPassword89",
+    database="myPyDatabase"
     )
-print(mydb)
-<mysql.connector.connection_cext.CMySQLConnection object at 0x000001A0FD52B310>
-mycursor = mydb.cursor()
-mycursor.execute("CREATE DATABASE myPyDatabase")
-mycursor.execute("SHOW DATABASES")
-for x in mycursor:
-    print(x)
 
-    
-('information_schema',)
-('mypydatabase',)
-('mysql',)
-('performance_schema',)
-('sakila',)
-('sys',)
-('world',)
+mycursor = mydb.cursor()
+mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
+mycursor.execute("SHOW TABLES")
+for x in mycursor:
+  print(x)
+
+  
+('customers',)
+mycursor.execute("ALTER TABLE customers ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY")
+sql = "INSERT INTO customers (name, address) VALUES (%s, %s)"
+val = ("John", "Highway 21")
+mycursor.execute(sql, val)
+mydb.commit()
+print(mycursor.rowcount, "record inserted.")
+1 record inserted.
+val = [
+    ('Alex', "Address 1'),
+     
+SyntaxError: unterminated string literal (detected at line 2)
+val = [
+    ('Alex 1', 'Address 1'),
+    ('Alex 2', 'Address 2'),
+    ('Alex 3', 'Address 3'),
+    ('Alex 4', 'Address 4'),
+    ('Alex 5', 'Address 5'),
+    ('Alex 6', 'Address 6')
+    ]
+     
+mycursor.executemany(sql, val)
+     
+mydb.commit()
+     
+print(mycursor.rowcount, "was inserted.")
+     
+6 was inserted.
+
+print("1 record inserted, ID:", mycursor.lastrowid)
+     
+1 record inserted, ID: 2
+mycursor.execute("SELECT * FROM customers")
+     
+myresult = mycursor.fetchall()
+     
+for x in myresult:
+  print(x)
+
+     
+('John', 'Highway 21', 1)
+('Alex 1', 'Address 1', 2)
+('Alex 2', 'Address 2', 3)
+('Alex 3', 'Address 3', 4)
+('Alex 4', 'Address 4', 5)
+('Alex 5', 'Address 5', 6)
+('Alex 6', 'Address 6', 7)
+mycursor.execute("SELECT name, address FROM customers")
+     
+myresult = mycursor.fetchall()
+     
+for x in myresult:
+  print(x)
+
+     
+('John', 'Highway 21')
+('Alex 1', 'Address 1')
+('Alex 2', 'Address 2')
+('Alex 3', 'Address 3')
+('Alex 4', 'Address 4')
+('Alex 5', 'Address 5')
+('Alex 6', 'Address 6')
+mycursor.execute("SELECT * FROM customers")
+     
+myresult = mycursor.fetchone()
+     
+print(myresult)
+     
+('John', 'Highway 21', 1)
